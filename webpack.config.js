@@ -23,6 +23,15 @@ module.exports = {
     port: 3000, //设置启动时的支行端口
     // contentBase: 'src', //指定托管的目录,使用html-webpack-plugin后，会内存中该项目根目录的放一份html页面，所以可以不托管src目录
     hot: true,  // 启用热更新的第一步
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001/api',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
 
   },
   plugins: [
@@ -51,7 +60,15 @@ module.exports = {
       // 可使用limit参数设置是否使用base64编码，如果图片大于limt的值，则不转成base64,否则就转
       // 可使用name参数指定使用原来的名字，不建议使用，会覆盖同名文件
       // 可使用[hash:8]获取32位哈希中的前几位来当做名字的一部分
-      {test: /\.(jpg|png|gif|bmp|jpeg)$/, use: 'url-loader?limit=1&name=[hash:8]-[name].ext'},
+      {
+        test: /\.(jpg|png|gif|bmp|jpeg)$/, 
+        // use: 'url-loader?limit=1&name=[hash:8]-[name].ext',
+        loader: 'url-loader',
+        options: {
+          limt: 1024,
+          esModule: false   //解决img的src显示[object%20Module]的问题
+        }
+      },
       // 使用url-loader处理字体的url
       {test: /\.(ttf|eot|svg|woff|woff2)$/, use: 'url-loader'},
       // 配置babel-loader转换为低级语法
